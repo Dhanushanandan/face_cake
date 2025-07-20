@@ -2,6 +2,7 @@ from flask import Flask, render_template, Response, jsonify
 import cv2
 import mediapipe as mp
 import math
+import os
 
 app = Flask(__name__)
 
@@ -73,4 +74,4 @@ def status():
     return jsonify({'message': current_status})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False)

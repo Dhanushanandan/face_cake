@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Happy Birthday Celebration</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
   <audio id="bgMusic" loop>
     <source src="{{ url_for('static', filename='hbd1.mp3') }}" type="audio/mpeg">
@@ -20,6 +22,8 @@
       <div class="video-box">
         <img src="{{ url_for('video_feed') }}" id="videoFeed" />
       </div>
+
+
 
       <div class="cake-container">
         <div class="velas">
@@ -187,7 +191,8 @@
           <rect x="10" y="475.571" fill="#fefae9" width="180" height="4" />
         </svg>
         <div class="slice-cake">🍰</div>
-        <div id="knife" draggable="true">🔪</div>
+
+         <div id="knife" draggable="true">🔪</div>
 
         <div class="text">
           <h1>Happy Birthday!</h1>
@@ -197,16 +202,157 @@
       <div id="progressBar">
         <div id="progressFill"></div>
       </div>
+      
+
+      <!-- <button id="cutCakeButton">Cut the Cake</button>
+      <div id="progressBar" style="display:none;">
+        <div id="progressFill"></div>
+      </div> -->
 
       <div id="statusMessage">Waiting for face...</div>
       <button id="getGift" style="display:none;"
         onclick="location.href=''">🎁 Get Your Gift</button>
     </div>
 
-    <footer>© 2025 DarkPhoenix | Real-time Facial Interaction</footer>
+    <footer>&copy; 2025 DarkPhoenix | Real-time Facial Interaction</footer>
   </div>
 
-  <script>
+
+<!-- 
+<script>
+  const startBtn = document.getElementById('startButton');
+const bgMusic = document.getElementById('bgMusic');
+const celebrationArea = document.getElementById('celebrationArea');
+const instruction = document.getElementById('instruction');
+const progressBar = document.getElementById('progressBar');
+const progressFill = document.getElementById('progressFill');
+const giftBtn = document.getElementById('getGift');
+const knife = document.getElementById('knife');
+const statusMessage = document.getElementById('statusMessage');
+const sliceCake = document.querySelector('.slice-cake');
+
+let cuttingProgress = 0;
+let cuttingComplete = false;
+let dragging = false;
+let cakeMoved = false;
+let giftButtonShown = false; // New flag to track gift button state
+
+startBtn.addEventListener('click', () => {
+  bgMusic.play().catch(() => {
+    console.log('Autoplay blocked, user interaction required.');
+  });
+  document.getElementById('title').style.display = 'none';
+  startBtn.style.display = 'none';
+  celebrationArea.style.display = 'block';
+});
+
+function moveSliceToMouth(x, y) {
+  sliceCake.style.display = 'block'; // Show slice
+  sliceCake.style.position = 'absolute';
+
+  // Position it initially at the mouth
+  sliceCake.style.left = `${x}px`;
+  sliceCake.style.top = `${y}px`;
+
+  // Trigger reflow before applying the final animation
+  sliceCake.offsetWidth;
+
+  // Animate to top middle of screen
+  sliceCake.style.transition = 'all 1.5s ease-in-out';
+  sliceCake.style.left = `${window.innerWidth / 2 - 25}px`;  // Adjust for cake width
+  sliceCake.style.top = `20px`;
+
+  // Listen for animation end to show gift button permanently
+  sliceCake.addEventListener('transitionend', () => {
+    giftBtn.style.display = 'inline-block';
+    giftButtonShown = true;  // keep the flag true
+  }, { once: true }); // once:true to only fire once
+}
+
+
+
+async function fetchStatus() {
+  try {
+    const res = await fetch("/status");
+    const data = await res.json();
+    const msg = data.message;
+
+    statusMessage.innerText = msg;
+
+    if (msg !== "Face not detected" && !cuttingComplete) {
+      instruction.innerText = "Drag the knife to cut the cake! 🔪";
+      if (!giftButtonShown) giftBtn.style.display = 'none';
+    } else if (msg === "Mouth Open" && cuttingComplete) {
+      instruction.innerText = "Enjoy your cake! 🎂";
+     
+      if (!cakeMoved) {
+        const mouthX = data.mouthX || window.innerWidth / 2;
+        const mouthY = data.mouthY || window.innerHeight / 4;
+
+        moveSliceToMouth(mouthX, mouthY);
+        cakeMoved = true;
+      }
+    } else if (cuttingComplete) {
+      instruction.innerText = "Now open your mouth to eat the cake!";
+      if (!giftButtonShown) giftBtn.style.display = 'none';
+    } else {
+      instruction.innerText = "Align your face inside the camera";
+      if (!giftButtonShown) giftBtn.style.display = 'none';
+    }
+  } catch (e) {
+    console.error("Error fetching status:", e);
+  }
+}
+
+setInterval(fetchStatus, 300);
+
+function onDragStart(e) {
+  e.preventDefault();
+  dragging = true;
+}
+
+function onDragEnd(e) {
+  dragging = false;
+}
+
+function onDragMove(e) {
+  if (!dragging || cuttingComplete) return;
+
+  let clientX, clientY;
+  if (e.touches) {
+    clientX = e.touches[0].clientX;
+    clientY = e.touches[0].clientY;
+  } else {
+    clientX = e.clientX;
+    clientY = e.clientY;
+  }
+
+  knife.style.position = 'absolute';
+  knife.style.left = `${clientX - 25}px`;
+  knife.style.top = `${clientY - 25}px`;
+
+  cuttingProgress += 0.7;
+  if (cuttingProgress > 100) cuttingProgress = 100;
+  progressFill.style.width = cuttingProgress + '%';
+
+  if (cuttingProgress >= 100 && !cuttingComplete) {
+    cuttingComplete = true;
+    instruction.innerText = "Now open your mouth to eat the cake!";
+    giftBtn.style.display = 'inline-block'; // Show gift button when cutting is complete
+    giftButtonShown = true; // Set flag to keep button persistent
+  }
+}
+
+knife.addEventListener('mousedown', onDragStart);
+document.addEventListener('mouseup', onDragEnd);
+document.addEventListener('mousemove', onDragMove);
+
+knife.addEventListener('touchstart', onDragStart);
+document.addEventListener('touchend', onDragEnd);
+document.addEventListener('touchmove', onDragMove);
+</script> -->
+
+<script>
     const startBtn = document.getElementById('startButton');
     const bgMusic = document.getElementById('bgMusic');
     const celebrationArea = document.getElementById('celebrationArea');
@@ -264,21 +410,23 @@
 
         if (msg !== "Face not detected" && !cuttingComplete) {
           instruction.innerText = "Drag the knife to cut the cake! 🔪";
-          giftBtn.style.display = 'none'; // Hide gift button until animation completes
+          if (!giftButtonShown) giftBtn.style.display = 'none';
         } else if (msg === "Mouth Open" && cuttingComplete) {
           instruction.innerText = "Enjoy your cake! 🎂";
+
           if (!cakeMoved) {
             const mouthX = data.mouthX || window.innerWidth / 2;
             const mouthY = data.mouthY || window.innerHeight / 4;
+
             moveSliceToMouth(mouthX, mouthY);
             cakeMoved = true;
           }
         } else if (cuttingComplete) {
           instruction.innerText = "Now open your mouth to eat the cake!";
-          giftBtn.style.display = 'none'; // Hide gift button until animation completes
+          if (!giftButtonShown) giftBtn.style.display = 'none';
         } else {
           instruction.innerText = "Align your face inside the camera";
-          giftBtn.style.display = 'none';
+          if (!giftButtonShown) giftBtn.style.display = 'none';
         }
       } catch (e) {
         console.error("Error fetching status:", e);
@@ -321,6 +469,8 @@
       if (cuttingProgress >= 100 && !cuttingComplete) {
         cuttingComplete = true;
         instruction.innerText = "Now open your mouth to eat the cake!";
+        giftBtn.style.display = 'inline-block';
+        giftButtonShown = true;
       }
     }
 
@@ -332,5 +482,11 @@
     document.addEventListener('touchend', onDragEnd);
     document.addEventListener('touchmove', onDragMove);
   </script>
+
+
 </body>
+
 </html>
+
+
+

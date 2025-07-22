@@ -218,141 +218,7 @@
   </div>
 
 
-<!-- 
-<script>
-  const startBtn = document.getElementById('startButton');
-const bgMusic = document.getElementById('bgMusic');
-const celebrationArea = document.getElementById('celebrationArea');
-const instruction = document.getElementById('instruction');
-const progressBar = document.getElementById('progressBar');
-const progressFill = document.getElementById('progressFill');
-const giftBtn = document.getElementById('getGift');
-const knife = document.getElementById('knife');
-const statusMessage = document.getElementById('statusMessage');
-const sliceCake = document.querySelector('.slice-cake');
-
-let cuttingProgress = 0;
-let cuttingComplete = false;
-let dragging = false;
-let cakeMoved = false;
-let giftButtonShown = false; // New flag to track gift button state
-
-startBtn.addEventListener('click', () => {
-  bgMusic.play().catch(() => {
-    console.log('Autoplay blocked, user interaction required.');
-  });
-  document.getElementById('title').style.display = 'none';
-  startBtn.style.display = 'none';
-  celebrationArea.style.display = 'block';
-});
-
-function moveSliceToMouth(x, y) {
-  sliceCake.style.display = 'block'; // Show slice
-  sliceCake.style.position = 'absolute';
-
-  // Position it initially at the mouth
-  sliceCake.style.left = `${x}px`;
-  sliceCake.style.top = `${y}px`;
-
-  // Trigger reflow before applying the final animation
-  sliceCake.offsetWidth;
-
-  // Animate to top middle of screen
-  sliceCake.style.transition = 'all 1.5s ease-in-out';
-  sliceCake.style.left = `${window.innerWidth / 2 - 25}px`;  // Adjust for cake width
-  sliceCake.style.top = `20px`;
-
-  // Listen for animation end to show gift button permanently
-  sliceCake.addEventListener('transitionend', () => {
-    giftBtn.style.display = 'inline-block';
-    giftButtonShown = true;  // keep the flag true
-  }, { once: true }); // once:true to only fire once
-}
-
-
-
-async function fetchStatus() {
-  try {
-    const res = await fetch("/status");
-    const data = await res.json();
-    const msg = data.message;
-
-    statusMessage.innerText = msg;
-
-    if (msg !== "Face not detected" && !cuttingComplete) {
-      instruction.innerText = "Drag the knife to cut the cake! 🔪";
-      if (!giftButtonShown) giftBtn.style.display = 'none';
-    } else if (msg === "Mouth Open" && cuttingComplete) {
-      instruction.innerText = "Enjoy your cake! 🎂";
-     
-      if (!cakeMoved) {
-        const mouthX = data.mouthX || window.innerWidth / 2;
-        const mouthY = data.mouthY || window.innerHeight / 4;
-
-        moveSliceToMouth(mouthX, mouthY);
-        cakeMoved = true;
-      }
-    } else if (cuttingComplete) {
-      instruction.innerText = "Now open your mouth to eat the cake!";
-      if (!giftButtonShown) giftBtn.style.display = 'none';
-    } else {
-      instruction.innerText = "Align your face inside the camera";
-      if (!giftButtonShown) giftBtn.style.display = 'none';
-    }
-  } catch (e) {
-    console.error("Error fetching status:", e);
-  }
-}
-
-setInterval(fetchStatus, 300);
-
-function onDragStart(e) {
-  e.preventDefault();
-  dragging = true;
-}
-
-function onDragEnd(e) {
-  dragging = false;
-}
-
-function onDragMove(e) {
-  if (!dragging || cuttingComplete) return;
-
-  let clientX, clientY;
-  if (e.touches) {
-    clientX = e.touches[0].clientX;
-    clientY = e.touches[0].clientY;
-  } else {
-    clientX = e.clientX;
-    clientY = e.clientY;
-  }
-
-  knife.style.position = 'absolute';
-  knife.style.left = `${clientX - 25}px`;
-  knife.style.top = `${clientY - 25}px`;
-
-  cuttingProgress += 0.7;
-  if (cuttingProgress > 100) cuttingProgress = 100;
-  progressFill.style.width = cuttingProgress + '%';
-
-  if (cuttingProgress >= 100 && !cuttingComplete) {
-    cuttingComplete = true;
-    instruction.innerText = "Now open your mouth to eat the cake!";
-    giftBtn.style.display = 'inline-block'; // Show gift button when cutting is complete
-    giftButtonShown = true; // Set flag to keep button persistent
-  }
-}
-
-knife.addEventListener('mousedown', onDragStart);
-document.addEventListener('mouseup', onDragEnd);
-document.addEventListener('mousemove', onDragMove);
-
-knife.addEventListener('touchstart', onDragStart);
-document.addEventListener('touchend', onDragEnd);
-document.addEventListener('touchmove', onDragMove);
-</script> -->
-
-<script>
+<!-- <script>
     const startBtn = document.getElementById('startButton');
     const bgMusic = document.getElementById('bgMusic');
     const celebrationArea = document.getElementById('celebrationArea');
@@ -482,6 +348,139 @@ document.addEventListener('touchmove', onDragMove);
     document.addEventListener('touchend', onDragEnd);
     document.addEventListener('touchmove', onDragMove);
   </script>
+ -->
+
+
+
+<script>
+  const startBtn = document.getElementById('startButton');
+  const bgMusic = document.getElementById('bgMusic');
+  const celebrationArea = document.getElementById('celebrationArea');
+  const instruction = document.getElementById('instruction');
+  const progressBar = document.getElementById('progressBar');
+  const progressFill = document.getElementById('progressFill');
+  const giftBtn = document.getElementById('getGift');
+  const knife = document.getElementById('knife');
+  const statusMessage = document.getElementById('statusMessage');
+  const sliceCake = document.querySelector('.slice-cake');
+
+  let cuttingProgress = 0;
+  let cuttingComplete = false;
+  let dragging = false;
+  let cakeMoved = false;
+  let giftButtonShown = false;
+
+  startBtn.addEventListener('click', () => {
+    bgMusic.play().catch(() => {
+      console.log('Autoplay blocked, user interaction required.');
+    });
+    document.getElementById('title').style.display = 'none';
+    startBtn.style.display = 'none';
+    celebrationArea.style.display = 'block';
+  });
+
+  function moveSliceToMouth(x, y) {
+    sliceCake.style.display = 'block';
+    sliceCake.style.position = 'absolute';
+    sliceCake.style.left = `${x}px`;
+    sliceCake.style.top = `${y}px`;
+    sliceCake.style.transition = 'none';
+
+    // Force reflow for transition to apply
+    void sliceCake.offsetWidth;
+
+    // Animate slice cake to top middle of screen
+    sliceCake.style.transition = 'all 1.5s ease-in-out';
+    sliceCake.style.left = `${window.innerWidth / 2 - sliceCake.offsetWidth / 2}px`;
+    sliceCake.style.top = `20px`;
+
+    sliceCake.addEventListener('transitionend', () => {
+      giftBtn.style.display = 'inline-block';
+      giftButtonShown = true;
+    }, { once: true });
+  }
+
+  async function fetchStatus() {
+    try {
+      const res = await fetch("/status");
+      const data = await res.json();
+      const msg = data.message;
+
+      statusMessage.innerText = msg;
+
+      if (msg !== "Face not detected" && !cuttingComplete) {
+        instruction.innerText = "Drag the knife to cut the cake! 🔪";
+        giftBtn.style.display = 'none'; // Hide gift button until animation completes
+      } else if (msg === "Mouth Open" && cuttingComplete) {
+        instruction.innerText = "Enjoy your cake! 🎂";
+
+        if (!cakeMoved) {
+          const mouthX = data.mouthX || window.innerWidth / 2;
+          const mouthY = data.mouthY || window.innerHeight / 4;
+
+          moveSliceToMouth(mouthX, mouthY);
+          cakeMoved = true;
+        }
+      } else if (cuttingComplete) {
+        instruction.innerText = "Now open your mouth to eat the cake!";
+        if (!giftButtonShown) giftBtn.style.display = 'none'; // Only hide if animation not complete
+      } else {
+        instruction.innerText = "Align your face inside the camera";
+        giftBtn.style.display = 'none';
+      }
+    } catch (e) {
+      console.error("Error fetching status:", e);
+    }
+  }
+
+  setInterval(fetchStatus, 300);
+
+  function onDragStart(e) {
+    e.preventDefault();
+    dragging = true;
+    knife.style.cursor = 'grabbing';
+  }
+
+  function onDragEnd(e) {
+    dragging = false;
+    knife.style.cursor = 'grab';
+  }
+
+  function onDragMove(e) {
+    if (!dragging || cuttingComplete) return;
+
+    let clientX, clientY;
+    if (e.touches) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+
+    knife.style.position = 'absolute';
+    knife.style.left = `${clientX - 25}px`;
+    knife.style.top = `${clientY - 25}px`;
+
+    cuttingProgress += 0.7;
+    if (cuttingProgress > 100) cuttingProgress = 100;
+    progressFill.style.width = cuttingProgress + '%';
+
+    if (cuttingProgress >= 100 && !cuttingComplete) {
+      cuttingComplete = true;
+      instruction.innerText = "Now open your mouth to eat the cake!";
+      // Do not show gift button here; wait for slice animation
+    }
+  }
+
+  knife.addEventListener('mousedown', onDragStart);
+  document.addEventListener('mouseup', onDragEnd);
+  document.addEventListener('mousemove', onDragMove);
+
+  knife.addEventListener('touchstart', onDragStart);
+  document.addEventListener('touchend', onDragEnd);
+  document.addEventListener('touchmove', onDragMove);
+</script>
 
 
 </body>
